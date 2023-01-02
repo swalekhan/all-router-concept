@@ -17,14 +17,14 @@ const sortQuotes = (quotes, ascending) =>{
 const QuoteList = (props) => {
   const history = useHistory()
   const location = useLocation()
-
+  
   const queryParam = new URLSearchParams(location.search)   // javascript constructor
   const isSortingAscending = queryParam.get('sort') === "asc"   // we can call this function inside sortHandler func;
  
   sortQuotes(props.quotes, isSortingAscending) 
 
   const sortingHandler = () => {
-    history.push('/quotes?sort='+(isSortingAscending?"desc":"asc")) //history render page whenever it changes url, quotes?sort this is a optional chaining; if the value exist after ? sign ia present then change page or stay on quotes; 
+    history.push(`${location.pathname}?sort=${(isSortingAscending?"desc":"asc")}`) //history render page whenever it changes url, quotes?sort this is a optional chaining; if the value exist after ? sign ia present then change page or stay on quotes; 
   }
 
 
