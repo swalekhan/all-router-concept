@@ -2,25 +2,40 @@ import { Route, useParams, useRouteMatch } from "react-router-dom";
 import Comments from '../components/comments/Comments'
 import HighlightedQuote from "../components/quotes/HighlightedQuote";
 import { Link } from "react-router-dom";
+import useHttp from "../hook/use-http";
+import { getSingleQuote } from "../lib/api";
+import { useEffect } from "react";
+import LoadingSpinner from "../components/UI/LoadingSpinner";
 
-const Dummy_Quotes = [
-   { id: "p1", author: "max", text: "tis is a great text" },
-   { id: "p2", author: "john", text: "tis is a good" },
-]
 
 const QuoteDetail = () => {
    const paras = useParams()
    const match = useRouteMatch()
-   console.log(match)
+    const {quoteId} = paras;
 
-   const find = Dummy_Quotes.find((e) => e.id === paras.quoteId)
+   const {sendRequest, status, data:loadedQuote,error} =  useHttp(getSingleQuote,true);
+   useEffect(()=>{
+    sendRequest(quoteId)
+   },[sendRequest, quoteId])   // whenever quoteId will change useEffect hook call function
 
-   if (!find) {
+   if(status ==="pending"){
+    return <div className="centered">
+        <LoadingSpinner/>
+    </div>
+   }
+
+   if(error){
+    return <div className="centered focuced">{error}</div>
+   }
+ 
+   // const find = Dummy_Quotes.find((e) => e.id === paras.quoteId)
+
+   if (!loadedQuote.text) {
       return <p>no data found</p>
    }
    return (
       <>
-         <HighlightedQuote text={find.text} author={find.author} />
+         <HighlightedQuote text={loadedQuote.text} author={loadedQuote.author} />
          <Route path={`${match.path}`} exact>
             <div className="centered">
                <Link className="btn--flat" to={`${match.url}/comments`}>Load component</Link>
